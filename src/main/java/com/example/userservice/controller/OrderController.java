@@ -1,0 +1,58 @@
+package com.example.userservice.controller;
+
+import com.example.userservice.model.Order;
+import com.example.userservice.request.OrderRequest;
+import com.example.userservice.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+
+@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        logger.error("Error processing request: {}", e.getMessage(), e);
+        return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Order>> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        return orderService.getOrderById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
+        try {
+            Order createdOrder = orderService.createOrder(orderRequest);
+            return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to create order: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+}
