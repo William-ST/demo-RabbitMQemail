@@ -6,7 +6,7 @@ RUN mvn clean package -DskipTests -Dproject.build.sourceEncoding=UTF-8 -Dmaven.r
 FROM openjdk:11-jre-slim
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-ARG APP_PORT=9100
+ARG APP_PORT=5003
 ENV SERVER_PORT=${APP_PORT}
 EXPOSE ${APP_PORT}
 CMD java ${JAVA_OPTS} -jar -Dspring.profiles.active=docker -Dserver.port=${SERVER_PORT} app.jar

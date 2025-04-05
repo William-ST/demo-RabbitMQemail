@@ -53,3 +53,6 @@ curl -X POST http://localhost:9100/api/users -H "Content-Type: application/json"
 curl -X POST http://localhost:9100/api/users -H "Content-Type: application/json" -d '{"name":"Ana Torres","email":"ana@example.com","phone":"123456789"}'
 curl -X GET http://localhost:9100/api/users
 
+docker build -t rabbitmq-springboot-demoapp:latest .
+docker tag rabbitmq-springboot-demoapp:latest williamst/rabbitmq-springboot-demoapp:latest
+docker push williamst/rabbitmq-springboot-demoapp:latest
